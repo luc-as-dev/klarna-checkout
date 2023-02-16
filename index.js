@@ -1,7 +1,10 @@
 
+import {config} from "dotenv";
 import express from "express";
+config();
+import { createOrder } from "./klarna.js";
 
-const PORT = 3000;
+const PORT = process.env.PORT;
 
 const products = [
     {id:"1",name:"Chair",price:199},
@@ -18,9 +21,10 @@ app.get("/",(req,res)=>{
     }).join(""));
 });
 
-app.get("/p/:id",(req,res)=>{
+app.get("/p/:id",async(req,res)=>{
     const product = products.find(p=>p.id===req.params.id);
-    res.send(product);
+    const data = await createOrder(product);
+    res.send(data.html_snippet);
 });
 
 app.listen(PORT,()=>{
